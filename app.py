@@ -27,25 +27,23 @@ class DrowsinessSystem:
         self.frame_counter = 0
         self.drowsiness_state = "NORMAL"
 
-        if mp is not None:
-            self.mp_face_mesh = mp.solutions.face_mesh
-            self.face_mesh = self.mp_face_mesh.FaceMesh(
-                max_num_faces=1,
-                refine_landmarks=True,
-                min_detection_confidence=0.5,
-                min_tracking_confidence=0.5
-            )
-        else:
+    
+
+        try:
+            if mp is not None:
+                self.mp_face_mesh = mp.solutions.face_mesh
+                self.face_mesh = self.mp_face_mesh.FaceMesh(
+                    max_num_faces=1,
+                    refine_landmarks=True,
+                    min_detection_confidence=0.5,
+                    min_tracking_confidence=0.5
+                )
+            else:
+                self.face_mesh = None
+        except Exception:
             self.face_mesh = None
-        self.face_mesh = self.mp_face_mesh.FaceMesh(
-        max_num_faces=1,
-            refine_landmarks=True,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5
-    )
             
         
-        self.mp_drawing = mp.solutions.drawing_utils
         self.drawing_spec = self.mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
         self.ear_threshold = 0.25
         self.max_drowsy_frames_warning = 25
