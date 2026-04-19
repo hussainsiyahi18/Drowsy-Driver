@@ -1,3 +1,4 @@
+import threading
 import streamlit as st
 from app import DrowsinessSystem
 
@@ -12,6 +13,8 @@ if "system" not in st.session_state:
     st.session_state.system = DrowsinessSystem()
 
 system = st.session_state.system
+def run_system():
+    system.run()
 
 # Dark theme styling
 st.markdown(
@@ -90,7 +93,10 @@ with col2:
     stop = st.button("⏹ Stop System")
 
     if start:
-        system.start_system()
+        st.warning("Live detection not supported on cloud demo")
+        thread = threading.Thread(target=run_system)
+        thread.daemon = True
+        thread.start()
 
     if stop:
         system.stop_system()
