@@ -127,7 +127,7 @@ class DrowsinessSystem:
         elif self.drowsiness_state == "CRITICAL":
             winsound.Beep(1200, 600)
             self.last_alert_time = current_time
-            
+
         elif self.drowsiness_state == "EMERGENCY":
             winsound.Beep(1500, 800)
             self.last_alert_time = current_time
