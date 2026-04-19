@@ -18,40 +18,57 @@ except Exception:
 # -----------------------------
 class DrowsinessSystem:
     def __init__(self):
+        # -------------------- Core State --------------------
         self.is_running = False
         self.last_valid_ear = 0.3
+        self.current_ear = 0.0
+        self.drowsiness_state = "NORMAL"
+        self.frame_counter = 0
+
+        # -------------------- User Settings --------------------
         self.emergency_contact = ""
         self.sound_enabled = True
-        self.current_ear = 0.0
-        self.cap = None
-        self.frame_counter = 0
-        self.drowsiness_state = "NORMAL"
 
-    
+        # -------------------- Video Capture --------------------
+        self.cap = None  # Initialize later when starting camera
+
+        # -------------------- MediaPipe Setup --------------------
+        self.mp_face_mesh = None
+        self.face_mesh = None
+        self.mp_drawing = None
+        self.drawing_spec = None
 
         try:
-            if mp is not None:
-                self.mp_face_mesh = mp.solutions.face_mesh
-                self.face_mesh = self.mp_face_mesh.FaceMesh(
-                    max_num_faces=1,
-                    refine_landmarks=True,
-                    min_detection_confidence=0.5,
-                    min_tracking_confidence=0.5
-                )
-            else:
-                self.face_mesh = None
-        except Exception:
+            self.mp_face_mesh = mp.solutions.face_mesh
+            self.mp_drawing = mp.solutions.drawing_utils
+
+            self.face_mesh = self.mp_face_mesh.FaceMesh(
+                max_num_faces=1,
+                refine_landmarks=True,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5
+            )
+
+            self.drawing_spec = self.mp_drawing.DrawingSpec(
+                thickness=1,
+                circle_radius=1
+            )
+
+        except Exception as e:
+            print(f"MediaPipe initialization failed: {e}")
             self.face_mesh = None
-            
-        
-        self.drawing_spec = self.mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+            self.mp_drawing = None
+            self.drawing_spec = None
+
+        # -------------------- Drowsiness Detection --------------------
         self.ear_threshold = 0.25
         self.max_drowsy_frames_warning = 25
         self.max_drowsy_frames_critical = 50
         self.max_drowsy_frames_emergency = 90
 
+        # -------------------- Emergency Handling --------------------
         self.emergency_start_time = None
-        self.emergency_duration = 5  # seconds countdown
+        self.emergency_duration = 5  # seconds
 
     # -------------------------
     # Camera Control
