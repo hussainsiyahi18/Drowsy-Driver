@@ -1,6 +1,12 @@
-import cv2
+try:
+    import cv2
+except Exception:
+    cv2 = None
 import numpy as np
-import mediapipe as mp
+try:
+    import mediapipe as mp
+except Exception:
+    mp = None
 import time
 import winsound
 
@@ -19,7 +25,16 @@ class DrowsinessSystem:
         self.drowsiness_state = "NORMAL"
 
         import mediapipe as mp
-        self.mp_face_mesh = mp.solutions.face_mesh
+        if mp is not None:
+            self.mp_face_mesh = mp.solutions.face_mesh
+            self.face_mesh = self.mp_face_mesh.FaceMesh(
+                max_num_faces=1,
+                refine_landmarks=True,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5
+            )
+        else:
+            self.face_mesh = None
         self.face_mesh = self.mp_face_mesh.FaceMesh(
         max_num_faces=1,
             refine_landmarks=True,
@@ -43,6 +58,8 @@ class DrowsinessSystem:
     # -------------------------
     
     def initialize_camera(self, source):
+        if cv2 is None:
+            return
         self.cap = cv2.VideoCapture(source)
         if not self.cap.isOpened():
             self.cap = None
@@ -73,6 +90,8 @@ class DrowsinessSystem:
         return None
 
     def detect_eyes(self, frame):
+        if self.face_mesh is None or cv2 is None:
+            return None
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.face_mesh.process(rgb)
         if not results.multi_face_landmarks:
@@ -201,6 +220,8 @@ class DrowsinessSystem:
     # Main Loop
     # -------------------------
     def run(self):
+        if cv2 is None:
+            return
         while self.is_running:
             frame = self.get_frame()
             if frame is None:
