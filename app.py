@@ -217,6 +217,7 @@ class DrowsinessSystem:
         elif self.drowsiness_state == "CRITICAL":
             color = (0, 0, 255)  # red
         if self.drowsiness_state == "EMERGENCY":
+            color = (0, 0, 0)  # black
             if remaining is not None and remaining > 0:
                 cv2.putText(frame, f"Calling in {int(remaining)}...",
                             (10, 100), cv2.FONT_HERSHEY_SIMPLEX,
