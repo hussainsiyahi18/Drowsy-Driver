@@ -8,7 +8,10 @@ try:
 except Exception:
     mp = None
 import time
-import winsound
+try:
+    import winsound
+except Exception:
+    winsound = None
 
 
 
@@ -140,16 +143,19 @@ class DrowsinessSystem:
             return
 
         if self.drowsiness_state == "WARNING":
-            winsound.Beep(800, 200)
-            self.last_alert_time = current_time
+            if self.sound_enabled and winsound:
+                winsound.Beep(800, 200)
+                self.last_alert_time = current_time
 
         elif self.drowsiness_state == "CRITICAL":
-            winsound.Beep(1200, 600)
-            self.last_alert_time = current_time
+            if self.sound_enabled and winsound:
+                winsound.Beep(1200, 600)
+                self.last_alert_time = current_time
 
         elif self.drowsiness_state == "EMERGENCY":
-            winsound.Beep(1500, 800)
-            self.last_alert_time = current_time
+            if self.sound_enabled and winsound:
+                winsound.Beep(1500, 800)
+                self.last_alert_time = current_time
 
     def handle_emergency(self):
         if self.drowsiness_state == "EMERGENCY":
