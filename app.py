@@ -27,7 +27,6 @@ class DrowsinessSystem:
         self.frame_counter = 0
         self.drowsiness_state = "NORMAL"
 
-        import mediapipe as mp
         if mp is not None:
             self.mp_face_mesh = mp.solutions.face_mesh
             self.face_mesh = self.mp_face_mesh.FaceMesh(
