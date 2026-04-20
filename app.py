@@ -2,6 +2,8 @@ try:
     import cv2
 except Exception:
     cv2 = None
+from unittest import result
+
 import numpy as np
 try:
     import mediapipe as mp
@@ -86,7 +88,8 @@ class DrowsinessSystem:
         if self.cap is not None:
             self.cap.release()
             self.cap = None
-        cv2.destroyAllWindows() 
+        if cv2:
+            cv2.destroyAllWindows()
 
     def get_frame(self):
         if self.cap is None:
@@ -101,9 +104,10 @@ class DrowsinessSystem:
     # -------------------------
     def detect_face(self, frame):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = self.face_mesh.process(frame_rgb)
-        if results.multi_face_landmarks:
-            return results.multi_face_landmarks[0]
+        if self.face_mesh is None or cv2 is None:
+            return None
+        if result.multi_face_landmarks:
+            return result.multi_face_landmarks[0]
         return None
 
     def detect_eyes(self, frame):
@@ -217,7 +221,7 @@ class DrowsinessSystem:
         elif self.drowsiness_state == "CRITICAL":
             color = (0, 0, 255)  # red
         if self.drowsiness_state == "EMERGENCY":
-            color = (0, 0, 0)  # black
+            color = (0, 0, 255)  # red
             if remaining is not None and remaining > 0:
                 cv2.putText(frame, f"Calling in {int(remaining)}...",
                             (10, 100), cv2.FONT_HERSHEY_SIMPLEX,
@@ -273,8 +277,10 @@ class DrowsinessSystem:
 
     def update_settings(self, ear=None, warning=None, critical=None, emergency=None):
 
-        if (warning and critical and warning >= critical) or \
-        (critical and emergency and critical >= emergency):
+        
+        if warning is not None and critical is not None and warning >= critical:
+            return
+        if critical is not None and emergency is not None and critical >= emergency:
             return
 
         if ear is not None:

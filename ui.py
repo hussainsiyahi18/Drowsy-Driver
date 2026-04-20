@@ -114,18 +114,17 @@ with col2:
     stop = st.button("⏹ Stop System")
 
     # Start system in background thread
-    if start:
-        if not running:
-            system.start_system()
+    if start and not running:
+        system.start_system()
 
-            def run_system():
-                system.run()
+        def run_system():
+            system.run()
 
-            thread = threading.Thread(target=run_system)
-            thread.daemon = True
-            thread.start()
+        thread = threading.Thread(target=run_system)
+        thread.daemon = True
+        thread.start()
 
-            st.session_state.thread = thread
+        st.session_state.thread = thread
 
     # Stop system
     if stop:
@@ -138,10 +137,10 @@ with col2:
     # ======================
     st.subheader("⚙ Settings")
 
-    ear = st.slider("EAR Threshold", 0.15, 0.35, 0.25, 0.01)
-    warning = st.slider("Warning Frames", 10, 50, 25)
-    critical = st.slider("Critical Frames", 20, 100, 50)
-    emergency = st.slider("Emergency Frames", 40, 150, 90)
+    ear = st.slider("EAR Threshold", 0.15, 0.35, system.ear_threshold, 0.01)
+    warning = st.slider("Warning Frames", 10, 50, system.max_drowsy_frames_warning)
+    critical = st.slider("Critical Frames", 20, 100, system.max_drowsy_frames_critical)
+    emergency = st.slider("Emergency Frames", 40, 150, system.max_drowsy_frames_emergency)
 
     if st.button("Apply Settings"):
         system.update_settings(ear, warning, critical, emergency)
